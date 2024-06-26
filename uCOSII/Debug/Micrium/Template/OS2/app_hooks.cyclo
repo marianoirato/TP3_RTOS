@@ -1,0 +1,8 @@
+../Micrium/Template/OS2/app_hooks.c:113:7:App_TaskCreateHook	1
+../Micrium/Template/OS2/app_hooks.c:133:7:App_TaskDelHook	1
+../Micrium/Template/OS2/app_hooks.c:153:7:App_TaskIdleHook	1
+../Micrium/Template/OS2/app_hooks.c:170:7:App_TaskStatHook	1
+../Micrium/Template/OS2/app_hooks.c:190:7:App_TaskReturnHook	1
+../Micrium/Template/OS2/app_hooks.c:215:7:App_TaskSwHook	1
+../Micrium/Template/OS2/app_hooks.c:238:7:App_TCBInitHook	1
+../Micrium/Template/OS2/app_hooks.c:258:7:App_TimeTickHook	1

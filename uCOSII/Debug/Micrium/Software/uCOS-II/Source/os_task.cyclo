@@ -1,0 +1,16 @@
+../Micrium/Software/uCOS-II/Source/os_task.c:64:8:OSTaskChangePrio	16
+../Micrium/Software/uCOS-II/Source/os_task.c:223:8:OSTaskCreate	6
+../Micrium/Software/uCOS-II/Source/os_task.c:351:8:OSTaskCreateExt	6
+../Micrium/Software/uCOS-II/Source/os_task.c:454:8:OSTaskDel	16
+../Micrium/Software/uCOS-II/Source/os_task.c:617:8:OSTaskDelReq	7
+../Micrium/Software/uCOS-II/Source/os_task.c:692:8:OSTaskNameGet	8
+../Micrium/Software/uCOS-II/Source/os_task.c:774:7:OSTaskNameSet	8
+../Micrium/Software/uCOS-II/Source/os_task.c:850:8:OSTaskResume	8
+../Micrium/Software/uCOS-II/Source/os_task.c:920:8:OSTaskStkChk	9
+../Micrium/Software/uCOS-II/Source/os_task.c:1006:8:OSTaskSuspend	10
+../Micrium/Software/uCOS-II/Source/os_task.c:1082:8:OSTaskQuery	7
+../Micrium/Software/uCOS-II/Source/os_task.c:1150:9:OSTaskRegGet	5
+../Micrium/Software/uCOS-II/Source/os_task.c:1213:8:OSTaskRegGetID	2
+../Micrium/Software/uCOS-II/Source/os_task.c:1273:7:OSTaskRegSet	5
+../Micrium/Software/uCOS-II/Source/os_task.c:1331:7:OS_TaskReturn	1
+../Micrium/Software/uCOS-II/Source/os_task.c:1368:7:OS_TaskStkClr	4

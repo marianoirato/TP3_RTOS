@@ -1,0 +1,5 @@
+../Micrium/Software/uCOS-II/Source/os_time.c:57:7:OSTimeDly	5
+../Micrium/Software/uCOS-II/Source/os_time.c:115:8:OSTimeDlyHMSM	10
+../Micrium/Software/uCOS-II/Source/os_time.c:179:8:OSTimeDlyResume	7
+../Micrium/Software/uCOS-II/Source/os_time.c:241:9:OSTimeGet	1
+../Micrium/Software/uCOS-II/Source/os_time.c:271:7:OSTimeSet	1

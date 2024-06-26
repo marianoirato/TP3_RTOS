@@ -1,0 +1,16 @@
+../Micrium/Software/uC-LIB/lib_ascii.c:153:14:ASCII_IsAlpha	5
+../Micrium/Software/uC-LIB/lib_ascii.c:183:14:ASCII_IsAlphaNum	7
+../Micrium/Software/uC-LIB/lib_ascii.c:213:14:ASCII_IsLower	3
+../Micrium/Software/uC-LIB/lib_ascii.c:243:14:ASCII_IsUpper	3
+../Micrium/Software/uC-LIB/lib_ascii.c:273:14:ASCII_IsDig	3
+../Micrium/Software/uC-LIB/lib_ascii.c:302:14:ASCII_IsDigOct	3
+../Micrium/Software/uC-LIB/lib_ascii.c:332:14:ASCII_IsDigHex	7
+../Micrium/Software/uC-LIB/lib_ascii.c:365:14:ASCII_IsBlank	3
+../Micrium/Software/uC-LIB/lib_ascii.c:399:14:ASCII_IsSpace	7
+../Micrium/Software/uC-LIB/lib_ascii.c:433:14:ASCII_IsPrint	3
+../Micrium/Software/uC-LIB/lib_ascii.c:467:14:ASCII_IsGraph	3
+../Micrium/Software/uC-LIB/lib_ascii.c:497:14:ASCII_IsPunct	9
+../Micrium/Software/uC-LIB/lib_ascii.c:531:14:ASCII_IsCtrl	4
+../Micrium/Software/uC-LIB/lib_ascii.c:569:11:ASCII_ToLower	3
+../Micrium/Software/uC-LIB/lib_ascii.c:607:11:ASCII_ToUpper	3
+../Micrium/Software/uC-LIB/lib_ascii.c:638:14:ASCII_Cmp	2

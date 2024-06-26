@@ -1,0 +1,13 @@
+../Micrium/Software/uCOS-II/Source/os_flag.c:105:11:OSFlagAccept	16
+../Micrium/Software/uCOS-II/Source/os_flag.c:230:15:OSFlagCreate	3
+../Micrium/Software/uCOS-II/Source/os_flag.c:322:15:OSFlagDel	10
+../Micrium/Software/uCOS-II/Source/os_flag.c:453:8:OSFlagNameGet	5
+../Micrium/Software/uCOS-II/Source/os_flag.c:524:7:OSFlagNameSet	5
+../Micrium/Software/uCOS-II/Source/os_flag.c:624:11:OSFlagPend	24
+../Micrium/Software/uCOS-II/Source/os_flag.c:824:11:OSFlagPendGetFlagsRdy	1
+../Micrium/Software/uCOS-II/Source/os_flag.c:881:11:OSFlagPost	19
+../Micrium/Software/uCOS-II/Source/os_flag.c:1021:11:OSFlagQuery	3
+../Micrium/Software/uCOS-II/Source/os_flag.c:1094:15:OS_FlagBlock	3
+../Micrium/Software/uCOS-II/Source/os_flag.c:1146:7:OS_FlagInit	2
+../Micrium/Software/uCOS-II/Source/os_flag.c:1213:18:OS_FlagTaskRdy	2
+../Micrium/Software/uCOS-II/Source/os_flag.c:1260:7:OS_FlagUnlink	4

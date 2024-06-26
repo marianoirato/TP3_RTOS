@@ -1,0 +1,14 @@
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:123:7:OSInitHookBegin	2
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:174:7:OSInitHookEnd	1
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:193:7:OSTaskCreateHook	1
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:216:7:OSTaskDelHook	1
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:240:7:OSTaskIdleHook	1
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:263:7:OSTaskReturnHook	1
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:286:7:OSTaskStatHook	1
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:475:10:OSTaskStkInit	1
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:573:7:OSTaskSwHook	1
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:605:7:OSTCBInitHook	1
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:628:7:OSTimeTickHook	2
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:658:7:OS_CPU_SysTickHandler	1
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:689:7:OS_CPU_SysTickInitFreq	1
+../Micrium/Software/uCOS-II/Ports/ARM-Cortex-M/ARMv7-M/os_cpu_c.c:714:7:OS_CPU_SysTickInit	1

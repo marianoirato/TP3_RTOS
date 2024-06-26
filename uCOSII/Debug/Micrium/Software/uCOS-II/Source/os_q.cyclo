@@ -1,0 +1,11 @@
+../Micrium/Software/uCOS-II/Source/os_q.c:74:8:OSQAccept	5
+../Micrium/Software/uCOS-II/Source/os_q.c:140:12:OSQCreate	5
+../Micrium/Software/uCOS-II/Source/os_q.c:245:12:OSQDel	10
+../Micrium/Software/uCOS-II/Source/os_q.c:376:8:OSQFlush	3
+../Micrium/Software/uCOS-II/Source/os_q.c:440:8:OSQPend	9
+../Micrium/Software/uCOS-II/Source/os_q.c:567:8:OSQPendAbort	6
+../Micrium/Software/uCOS-II/Source/os_q.c:644:8:OSQPost	6
+../Micrium/Software/uCOS-II/Source/os_q.c:715:8:OSQPostFront	6
+../Micrium/Software/uCOS-II/Source/os_q.c:795:8:OSQPostOpt	11
+../Micrium/Software/uCOS-II/Source/os_q.c:879:8:OSQQuery	6
+../Micrium/Software/uCOS-II/Source/os_q.c:939:7:OS_QInit	2

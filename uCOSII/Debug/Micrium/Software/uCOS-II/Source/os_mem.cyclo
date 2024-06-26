@@ -1,0 +1,7 @@
+../Micrium/Software/uCOS-II/Source/os_mem.c:74:10:OSMemCreate	8
+../Micrium/Software/uCOS-II/Source/os_mem.c:175:8:OSMemGet	3
+../Micrium/Software/uCOS-II/Source/os_mem.c:239:8:OSMemNameGet	4
+../Micrium/Software/uCOS-II/Source/os_mem.c:304:7:OSMemNameSet	4
+../Micrium/Software/uCOS-II/Source/os_mem.c:362:8:OSMemPut	4
+../Micrium/Software/uCOS-II/Source/os_mem.c:415:8:OSMemQuery	3
+../Micrium/Software/uCOS-II/Source/os_mem.c:460:7:OS_MemInit	2

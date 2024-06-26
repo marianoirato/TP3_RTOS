@@ -1,0 +1,2 @@
+../Drivers/CMSIS/Include/core_cm3.h:1876:26:ITM_SendChar	4
+../Core/Src/swo_debug.c:21:6:SwdPrintf	2

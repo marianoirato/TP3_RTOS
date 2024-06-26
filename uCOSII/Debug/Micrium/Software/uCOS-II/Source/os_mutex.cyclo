@@ -1,0 +1,7 @@
+../Micrium/Software/uCOS-II/Source/os_mutex.c:97:10:OSMutexAccept	7
+../Micrium/Software/uCOS-II/Source/os_mutex.c:191:12:OSMutexCreate	8
+../Micrium/Software/uCOS-II/Source/os_mutex.c:305:12:OSMutexDel	15
+../Micrium/Software/uCOS-II/Source/os_mutex.c:471:7:OSMutexPend	19
+../Micrium/Software/uCOS-II/Source/os_mutex.c:645:8:OSMutexPost	10
+../Micrium/Software/uCOS-II/Source/os_mutex.c:730:8:OSMutexQuery	7
+../Micrium/Software/uCOS-II/Source/os_mutex.c:790:15:OSMutex_RdyAtPrio	2

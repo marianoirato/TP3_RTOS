@@ -1,0 +1,8 @@
+../Micrium/Software/uCOS-II/Source/os_mbox.c:60:8:OSMboxAccept	3
+../Micrium/Software/uCOS-II/Source/os_mbox.c:102:12:OSMboxCreate	4
+../Micrium/Software/uCOS-II/Source/os_mbox.c:183:12:OSMboxDel	10
+../Micrium/Software/uCOS-II/Source/os_mbox.c:321:8:OSMboxPend	8
+../Micrium/Software/uCOS-II/Source/os_mbox.c:443:8:OSMboxPendAbort	6
+../Micrium/Software/uCOS-II/Source/os_mbox.c:523:8:OSMboxPost	6
+../Micrium/Software/uCOS-II/Source/os_mbox.c:602:8:OSMboxPostOpt	9
+../Micrium/Software/uCOS-II/Source/os_mbox.c:675:8:OSMboxQuery	5
