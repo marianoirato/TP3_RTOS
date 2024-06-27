@@ -13,6 +13,6 @@
 ../Core/Src/DIO.c:672:15:DOUpdate	16	static
 ../Core/Src/DIO.c:750:7:DIOInitIO	4	static
 ../Core/Src/DIO.c:767:7:DIRd	24	static
-../Core/Src/DIO.c:786:17:inp	24	static
-../Core/Src/DIO.c:807:7:DOWr	24	static
-../Core/Src/DIO.c:829:13:outp	16	static
+../Core/Src/DIO.c:785:17:inp	24	static
+../Core/Src/DIO.c:806:7:DOWr	24	static
+../Core/Src/DIO.c:827:13:outp	16	static

@@ -13,6 +13,6 @@
 ../Core/Src/DIO.c:672:15:DOUpdate	8
 ../Core/Src/DIO.c:750:7:DIOInitIO	1
 ../Core/Src/DIO.c:767:7:DIRd	2
-../Core/Src/DIO.c:786:17:inp	1
-../Core/Src/DIO.c:807:7:DOWr	3
-../Core/Src/DIO.c:829:13:outp	1
+../Core/Src/DIO.c:785:17:inp	1
+../Core/Src/DIO.c:806:7:DOWr	3
+../Core/Src/DIO.c:827:13:outp	1
