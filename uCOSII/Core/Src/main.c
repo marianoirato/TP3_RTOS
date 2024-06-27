@@ -48,17 +48,6 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define PER11 200
-#define PER12 400
-
-#define PER21 400
-#define PER22 400
-#define PER23 400
-
-#define PER31 200
-#define PER32 300
-#define PER33 350
-
 #define seno360 361
 #define seno180 181
 #define seno90 91
@@ -85,6 +74,10 @@ static OS_STK Secuencia3Stk[APP_CFG_STARTUP_TASK_STK_SIZE];//Led secuencia 3
 
 void UsbPrintf (CPU_CHAR  *p_fmt, ...);
 
+void PinReset();
+void SuspendAllTasks();
+void SuspendAllTasksExceptOne(int);
+int GetButton();
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,6 +89,30 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+enum LED{
+	LED1,
+	LED2,
+	LED3
+};
+
+enum BOTON{
+	BOTON1,
+	BOTON2,
+	BOTON3,
+	BOTON4,
+	BOTON5,
+	DEFAULT
+};
+
+enum TASKS{
+	INIT = 1,
+	USB_TASK,
+	SENO,
+	SEC1,
+	SEC2,
+	SEC3
+};
+
 int salida[8] = {0};
 int c = 0;
 int e = 0;
@@ -138,8 +155,8 @@ CPU_INT16U int_id;
   CPU_IntDis();
   for (int_id = CPU_INT_EXT0; int_id <= (EXT_INT_MAX_NBR - 1u); int_id++)
   {
-  /* Set all external intr. to KA interrupt priority boundary */
-  CPU_IntSrcPrioSet(int_id, CPU_CFG_KA_IPL_BOUNDARY, CPU_INT_KA);
+	  /* Set all external intr. to KA interrupt priority boundary */
+	  CPU_IntSrcPrioSet(int_id, CPU_CFG_KA_IPL_BOUNDARY, CPU_INT_KA);
   }
   /* USER CODE END Init */
 
@@ -351,16 +368,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB0 PB1 PB4 PB7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_7;
+  /*Configure GPIO pins : PB0 PB1 PB4 PB6
+                           PB7 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_6
+                          |GPIO_PIN_7;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PB6 */
-  GPIO_InitStruct.Pin = GPIO_PIN_6;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
@@ -423,54 +436,29 @@ static void StartupTask (void *p_arg){
 		OSStatInit();                                               /* Determine CPU capacity.                              */
 	#endif
 
-	// App_EventCreate();                                          /* Create application events.                           */
-	// App_TaskCreate();                                           /* Create application tasks.                            */
-
-	OSTaskSuspend(2);//USB
-	OSTaskSuspend(3);//Seno
-	OSTaskSuspend(4);//Sec1
-	OSTaskSuspend(5);//Sec2
-	OSTaskSuspend(6);//Sec3
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 1);
 
 	while (DEF_TRUE){
-		if(DIGet(0)){
-			//OSTaskSuspend(2);//USB
-			OSTaskSuspend(3);//Seno
-			OSTaskResume(4);//Sec1
-			OSTaskSuspend(5);//Sec2
-			OSTaskSuspend(6);//Sec3
+		switch (GetButton()) {
+			case BOTON1:
+				SuspendAllTasksExceptOne(SEC1);
+				break;
+			case BOTON2:
+				SuspendAllTasksExceptOne(SEC2);
+				break;
+			case BOTON3:
+				SuspendAllTasksExceptOne(SEC3);
+				break;
+			case BOTON4:
+				SuspendAllTasksExceptOne(SENO);
+				break;
+			case BOTON5:
+				SuspendAllTasksExceptOne(SENO);
+				break;
+			default:
+				SuspendAllTasks();
+				break;
 		}
-		if(DIGet(1)){
-			//OSTaskSuspend(2);//USB
-			OSTaskSuspend(3);//Seno
-			OSTaskSuspend(4);//Sec1
-			OSTaskResume(5);//Sec2
-			OSTaskSuspend(6);//Sec3
-		};
-		if(DIGet(2)){
-			//OSTaskSuspend(2);//USB
-			OSTaskSuspend(3);//Seno
-			OSTaskSuspend(4);//Sec1
-			OSTaskSuspend(5);//Sec2
-			OSTaskResume(6);//Sec3
-		};
-		if(DIGet(3)){
-			//OSTaskResume(2);//USB
-			OSTaskResume(3);//Seno
-			OSTaskSuspend(4);//Sec1
-			OSTaskSuspend(5);//Sec2
-			OSTaskSuspend(6);//Sec3
-		};
-		if(DIGet(4)){
-			//OSTaskResume(2);//USB
-			OSTaskResume(3);//Seno
-			OSTaskSuspend(4);//Sec1
-			OSTaskSuspend(5);//Sec2
-			OSTaskSuspend(6);//Sec3
-		};
-		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-		//OSTimeDlyHMSM(0u, 0u, 0u, 1u);
-		//UsbPrintf("Frencuencia Seno: %d\n",valorFrecuenciaHz[frecuencia]);
 		OSTimeDly(1);
 	}
 }
@@ -519,35 +507,27 @@ static void SenoGenerador (void *p_arg){
 	// App_EventCreate();                                          /* Create application events.                           */
 	// App_TaskCreate();                                           /* Create application tasks.                            */
 
-	DOSet(0,0);
-	DOSet(1,0);
-	DOSet(2,0);
-	DOSet(3,0);
-	DOSet(4,0);
-	DOSet(5,0);
-	DOSet(6,0);
-	DOSet(7,0);
+	PinReset();
 
 	while (DEF_TRUE){
 		//OSTaskSuspend(2);
 		UsbPrintf("Frencuencia Seno: %d Hz\n",valorFrecuenciaHz[frecuencia]);
 		//UsbPrintf("uCOS-II Running...\n");
-		if(DIGet(3)){ //valorFrecuencia[5] = {1, 5, 10, 15, 20};
-			if(frecuencia<4){
+		if(DIGet(3)){
+			if(frecuencia < 4){
 				frecuencia++;
 			}
 		}
 		if(DIGet(4)){
-			if(frecuencia>0){
+			if(frecuencia > 0){
 				frecuencia--;
 			}
 		}
-		for(int i=0; i<seno45; i++){
-			for(int j=0; j<8;j++){
-				salida[j]=(senoArreglo45[i]>>j)%2;
-				DOSet(j,salida[j]);
+		for(int i = 0; i < seno45; i++){
+			for(int j = 0; j < 8; j++){
+				salida[j] = (senoArreglo45[i] >> j) % 2;
+				DOSet(j, salida[j]);
 			}
-			//OSTimeDlyHMSM(0u, 0u, 0u, 1u);
 			OSTimeDly(valorFrecuencia[frecuencia]);
 		}
 	}
@@ -556,10 +536,6 @@ static void SenoGenerador (void *p_arg){
 
 /*Secuencia 1*/
 static void Secuencia1 (void *p_arg){
-	c=0;
-	e=0;
-	f=0;
-
 	CPU_INT32U cpu_clk;
 	(void)p_arg;
 	cpu_clk = HAL_RCC_GetHCLKFreq();
@@ -571,48 +547,20 @@ static void Secuencia1 (void *p_arg){
 		OSStatInit();                                               /* Determine CPU capacity.                              */
 	#endif
 
-	// App_EventCreate();                                          /* Create application events.                           */
-	// App_TaskCreate();                                           /* Create application tasks.                            */
+    DOCfgMode(LED1, DO_MODE_BLINK_ASYNC, false);
+    DOCfgBlink(LED1, DO_BLINK_EN, 99, 199);
 
-	DOSet(0,0);
-	DOSet(1,0);
-	DOSet(2,0);
-	DOSet(3,0);
-	DOSet(4,0);
-	DOSet(5,0);
-	DOSet(6,0);
-	DOSet(7,0);
+    DOCfgMode(LED2, DO_MODE_BLINK_ASYNC, false);
+    DOCfgBlink(LED2, DO_BLINK_EN, 199, 399);
 
 	while (DEF_TRUE){
-		//OSTaskSuspend(3);
-		DOSet(0,salida[0]);
-		DOSet(1,salida[1]);
-
-		salida[0]= (c<= 100) ? 1 : 0 ;
-		salida[1]= (e<= 200) ? 1 : 0 ;
-
-		//OSTimeDlyHMSM(0u, 0u, 0u, 1u);
-		OSTimeDly(1);
-
-		if(c <= PER11){
-			c++ ;}
-		else {
-			c=0;}
-		if(e <= PER12){
-			e++ ;}
-		else {
-			e=0;}
-
+	    OSTimeDly(1);
 	}
 }
 
 
 /*Secuencia 2*/
 static void Secuencia2 (void *p_arg){
-	c=0;
-	e=0;
-	f=0;
-
 	CPU_INT32U cpu_clk;
 	(void)p_arg;
 	cpu_clk = HAL_RCC_GetHCLKFreq();
@@ -624,54 +572,23 @@ static void Secuencia2 (void *p_arg){
 		OSStatInit();                                               /* Determine CPU capacity.                              */
 	#endif
 
-	// App_EventCreate();                                          /* Create application events.                           */
-	// App_TaskCreate();                                           /* Create application tasks.                            */
+	DOCfgMode(LED1, DO_MODE_BLINK_ASYNC, false);
+	DOCfgBlink(LED1, DO_BLINK_EN, 99, 299);
 
-	DOSet(0,0);
-	DOSet(1,0);
-	DOSet(2,0);
-	DOSet(3,0);
-	DOSet(4,0);
-	DOSet(5,0);
-	DOSet(6,0);
-	DOSet(7,0);
+	DOCfgMode(LED2, DO_MODE_BLINK_ASYNC, false);
+	DOCfgBlink(LED2, DO_BLINK_EN, 199, 399);
+
+	DOCfgMode(LED3, DO_MODE_BLINK_ASYNC, false);
+	DOCfgBlink(LED3, DO_BLINK_EN, 299, 399);
 
 	while (DEF_TRUE){
-		//OSTaskSuspend(4);
-		DOSet(0,salida[0]);
-		DOSet(1,salida[1]);
-		DOSet(2,salida[2]);
-
-		salida[0]= (c<= 100) ? 1 : 0 ;
-		salida[1]= (e<= 200) ? 1 : 0 ;
-		salida[2]= (f<= 300) ? 1 : 0 ;
-
-		//OSTimeDlyHMSM(0u, 0u, 0u, 1u);
 		OSTimeDly(1);
-
-		if(c <= PER21){
-			c++ ;}
-		else {
-			c=0;}
-		if(e <= PER22){
-			e++ ;}
-		else {
-			e=0;}
-		if(f <= PER23){
-			f++ ;}
-		else {
-			f=0;}
-
 	}
 }
 
 
 /*Secuencia 3*/
 static void Secuencia3 (void *p_arg){
-	c=0;
-	e=0;
-	f=0;
-
 	CPU_INT32U cpu_clk;
 	(void)p_arg;
 	cpu_clk = HAL_RCC_GetHCLKFreq();
@@ -683,48 +600,17 @@ static void Secuencia3 (void *p_arg){
 		OSStatInit();                                               /* Determine CPU capacity.                              */
 	#endif
 
-	// App_EventCreate();                                          /* Create application events.                           */
-	// App_TaskCreate();                                           /* Create application tasks.                            */
+	DOCfgMode(LED1, DO_MODE_BLINK_ASYNC, false);
+	DOCfgBlink(LED1, DO_BLINK_EN, 99, 199);
 
-	DOSet(0,0);
-	DOSet(1,0);
-	DOSet(2,0);
-	DOSet(3,0);
-	DOSet(4,0);
-	DOSet(5,0);
-	DOSet(6,0);
-	DOSet(7,0);
+	DOCfgMode(LED2, DO_MODE_BLINK_ASYNC, false);
+	DOCfgBlink(LED2, DO_BLINK_EN, 149, 299);
+
+	DOCfgMode(LED3, DO_MODE_BLINK_ASYNC, false);
+	DOCfgBlink(LED3, DO_BLINK_EN, 199, 349);
 
 	while (DEF_TRUE){
-		//OSTaskSuspend(5);
-
-		DOSet(0,salida[0]);
-		DOSet(1,salida[1]);
-		DOSet(2,salida[2]);
-
-		//uint16_t estado = DIGet(0);
-
-		salida[0]= (c<= 100) ? 1 : 0 ;
-		salida[1]= (e<= 150) ? 1 : 0 ;
-		salida[2]= (f<= 200) ? 1 : 0 ;
-		//UsbPrintf("%d \n",estado);
-
-		//OSTimeDlyHMSM(0u, 0u, 0u, 1u);
 		OSTimeDly(1);
-
-		if(c <= PER31){
-			c++ ;}
-	    else {
-	    	c=0;}
-		if(e <= PER32){
-			e++ ;}
-	    else {
-	    	e=0;}
-		if(f <= PER33){
-			f++ ;}
-	    else {
-	    	f=0;}
-
 	}
 }
 
@@ -756,6 +642,46 @@ void UsbPrintf (CPU_CHAR  *p_fmt, ...)
     len = strlen(str);
 
     CDC_Transmit_FS((uint8_t *)str, len);
+}
+
+int GetButton(){
+	int boton;
+
+	if(DIGet(BOTON1)){
+		boton = BOTON1;
+	}else if(DIGet(BOTON2)){
+		boton = BOTON2;
+	}else if(DIGet(BOTON3)){
+		boton = BOTON3;
+	}else if(DIGet(BOTON4)){
+		boton = BOTON4;
+	}else if(DIGet(BOTON5)){
+		boton = BOTON5;
+	}else
+		boton = DEFAULT;
+
+	return boton;
+}
+
+void PinReset(){
+	for (int pin = 0; pin < 8; pin++) {
+		DOSet(pin, 0);
+	}
+}
+
+void SuspendAllTasks(){
+	for (int task = 2; task < 7; task++) {
+		OSTaskSuspend(task);
+	}
+}
+void SuspendAllTasksExceptOne(int resume){
+
+	OSTaskResume(resume);
+
+	for (int task = 2; task < 7; task++) {
+		if(task != resume)
+			OSTaskSuspend(task);
+	}
 }
 
 /* USER CODE END 4 */

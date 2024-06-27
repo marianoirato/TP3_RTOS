@@ -26,8 +26,6 @@
 #include <os.h>
 #include <os_cpu.h>
 #include "stm32f1xx_hal.h"
-#define TRUE 1
-#define FALSE 0
 
 ////////////////////
 

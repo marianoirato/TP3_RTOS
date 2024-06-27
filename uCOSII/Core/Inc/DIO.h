@@ -29,9 +29,9 @@
 #define  DIO_MAX_DI                 16//8       /* Maximum number of Discrete Input  Channels (1..255)     */
 #define  DIO_MAX_DO                 16//8       /* Maximum number of Discrete Output Channels (1..255)     */
 
-#define  DI_EDGE_EN                 0       /* Enable code generation to support edge trig. (when 1)   */
+#define  DI_EDGE_EN                 0   	    /* Enable code generation to support edge trig. (when 1)   */
 
-#define  DO_BLINK_MODE_EN           0       /* Enable code generation to support blink mode (when 1)   */
+#define  DO_BLINK_MODE_EN           1	        /* Enable code generation to support blink mode (when 1)   */
 
 #endif
 
@@ -41,6 +41,8 @@
 #define  DIO_EXT  extern
 #endif
 
+#define TRUE 1
+#define FALSE 0
 /*
 *********************************************************************************************************
 *                                       DISCRETE INPUT CONSTANTS
@@ -157,8 +159,8 @@ void     DOSetBypass(uint16_t n, bool state);
 void     DOSetBypassEn(uint16_t n, bool state);
 
 #if      DO_BLINK_MODE_EN
-void     DOCfgBlink(uint8_t n, uint8_t mode, uint8_t a, uint8_t b);
-void     DOSetSyncCtrMax(uint8_t val);
+void  	 DOCfgBlink (uint16_t n, uint16_t mode, uint16_t a, uint16_t b);
+void     DOSetSyncCtrMax(uint16_t val);
 #endif
 
 /*
