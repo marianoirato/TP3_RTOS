@@ -34,6 +34,7 @@
 #include <DIO.H>
 #include <string.h>
 #include "usbd_cdc_if.h"
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -115,13 +116,6 @@ int salida[8] = {0};
 int frecuencia = 0;
 int valorFrecuencia[5] = {1, 10, 20, 30, 40};
 int valorFrecuenciaHz[5] = {213, 21, 10, 7, 5};
-
-int senoArreglo45[seno45]={
-		0x80, 0x91, 0xa3, 0xb3, 0xc3, 0xd1, 0xde, 0xe9, 0xf2, 0xf9, 0xfd, 0xff, 0xfe, 0xfb, 0xf6, 0xee,
-		0xe4, 0xd8, 0xca, 0xbb, 0xab, 0x9a, 0x88, 0x77, 0x65, 0x54, 0x44, 0x35, 0x27, 0x1b, 0x11, 0x09,
-		0x04, 0x01, 0x00, 0x02, 0x06, 0x0d, 0x16, 0x21,	0x2e, 0x3c, 0x4c, 0x5c, 0x6e, 0x7f,
-};
-
 
 /* USER CODE END 0 */
 
@@ -411,16 +405,17 @@ static void StartupTask (void *p_arg){
 	(void)p_arg;
 	cpu_clk = HAL_RCC_GetHCLKFreq();
 
-	/* Initialize and enable System Tick timer */
 	OS_CPU_SysTickInitFreq(cpu_clk);
 
 	#if (OS_TASK_STAT_EN > 0)
-		OSStatInit();                                               /* Determine CPU capacity.                              */
+		OSStatInit();
 	#endif
+
+	SuspendAllTasks();
+	ApagarBlink();
 
 	while (DEF_TRUE){
 		switch (GetButton()) {
-		//switch(3){
 			case BOTON1:
 				SuspendAllTasksExceptOne(SEC1);
 				break;
@@ -433,9 +428,6 @@ static void StartupTask (void *p_arg){
 			case BOTON4:
 				SuspendAllTasksExceptOne(SENO);
 				break;
-			case BOTON5:
-				SuspendAllTasksExceptOne(SENO);
-				break;
 			default:
 				break;
 		}
@@ -444,41 +436,42 @@ static void StartupTask (void *p_arg){
 }
 
 
-static void SenoTsk (void *p_arg){
+static void SenoTsk (void *p_arg) {
+    CPU_INT32U cpu_clk;
+    (void)p_arg;
+    cpu_clk = HAL_RCC_GetHCLKFreq();
 
-	CPU_INT32U cpu_clk;
-	(void)p_arg;
-	cpu_clk = HAL_RCC_GetHCLKFreq();
+    OS_CPU_SysTickInitFreq(cpu_clk);
 
-	OS_CPU_SysTickInitFreq(cpu_clk);
+    #if (OS_TASK_STAT_EN > 0)
+    OSStatInit();
+    #endif
 
-	#if (OS_TASK_STAT_EN > 0)
-		OSStatInit();
-	#endif
+    static uint8_t senoArreglo45[seno45];
 
-	while (DEF_TRUE){
-		ApagarBlink();
+    for (int i = 0; i < seno45; i++) {
+        senoArreglo45[i] = (uint8_t)(127.5 * (1 + sin(2 * 3.14159265 * i / seno45)));
+    }
 
-		UsbPrintf("Frencuencia Seno: %d Hz\n", valorFrecuenciaHz[frecuencia]);
+    while (DEF_TRUE) {
+        ApagarBlink();
 
-		if(DIGet(3)){
-			if(frecuencia < 4){
-				frecuencia++;
-			}
-		}
-		if(DIGet(4)){
-			if(frecuencia > 0){
-				frecuencia--;
-			}
-		}
-		for(int i = 0; i < seno45; i++){
-			for(int j = 0; j < 8; j++){
-				salida[j] = (senoArreglo45[i] >> j) % 2;
-				DOSet(j, salida[j]);
-			}
-			OSTimeDly(valorFrecuencia[frecuencia]);
-		}
-	}
+        if (DIGet(BOTON4)) {
+            if (frecuencia < 4) {
+                frecuencia++;
+            }else{
+            	frecuencia = 0;
+            }
+        }
+
+        for (int i = 0; i < seno45; i++) {
+            for (int j = 0; j < 8; j++) {
+                salida[j] = (senoArreglo45[i] >> j) % 2;
+                DOSet(j, salida[j]);
+            }
+            OSTimeDly(valorFrecuencia[frecuencia]);
+        }
+    }
 }
 
 
@@ -496,7 +489,6 @@ static void PrimerSecuencia (void *p_arg){
 	PinReset();
 
 	while (DEF_TRUE){
-		UsbPrintf("Secuencia 1");
 	    DOCfgMode(LED1, DO_MODE_BLINK_ASYNC, false);
 	    DOCfgBlink(LED1, DO_BLINK_EN, 99, 199);
 
