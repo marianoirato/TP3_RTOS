@@ -420,6 +420,7 @@ static void StartupTask (void *p_arg){
 
 	while (DEF_TRUE){
 		switch (GetButton()) {
+		//switch(3){
 			case BOTON1:
 				SuspendAllTasksExceptOne(SEC1);
 				break;
@@ -436,7 +437,6 @@ static void StartupTask (void *p_arg){
 				SuspendAllTasksExceptOne(SENO);
 				break;
 			default:
-				SuspendAllTasks();
 				break;
 		}
 		OSTimeDly(1);
