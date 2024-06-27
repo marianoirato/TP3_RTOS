@@ -76,6 +76,7 @@ void PinReset();
 void SuspendAllTasks();
 void SuspendAllTasksExceptOne(int);
 int GetButton();
+void ApagarBlink();
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -88,9 +89,9 @@ static void MX_GPIO_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 enum LED{
-	LED1,
-	LED2,
-	LED3
+	LED1 = 8,
+	LED2 = 9,
+	LED3 = 10
 };
 
 enum BOTON{
@@ -328,7 +329,8 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3
-                          |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
+                          |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7
+                          |LED1_Pin|LED2_Pin|LED3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -338,9 +340,11 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PA0 PA1 PA2 PA3
-                           PA4 PA5 PA6 PA7 */
+                           PA4 PA5 PA6 PA7
+                           LED1_Pin LED2_Pin LED3_Pin */
   GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3
-                          |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
+                          |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7
+                          |LED1_Pin|LED2_Pin|LED3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -414,8 +418,6 @@ static void StartupTask (void *p_arg){
 		OSStatInit();                                               /* Determine CPU capacity.                              */
 	#endif
 
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 1);
-
 	while (DEF_TRUE){
 		switch (GetButton()) {
 			case BOTON1:
@@ -454,14 +456,10 @@ static void SenoTsk (void *p_arg){
 		OSStatInit();
 	#endif
 
-	PinReset();
-
-    DOCfgMode(LED1, DO_MODE_LOW, false);
-    DOCfgMode(LED2, DO_MODE_LOW, false);
-    DOCfgMode(LED3, DO_MODE_LOW, false);
-
 	while (DEF_TRUE){
-		UsbPrintf("Frencuencia Seno: %d Hz\n",valorFrecuenciaHz[frecuencia]);
+		ApagarBlink();
+
+		UsbPrintf("Frencuencia Seno: %d Hz\n", valorFrecuenciaHz[frecuencia]);
 
 		if(DIGet(3)){
 			if(frecuencia < 4){
@@ -495,8 +493,10 @@ static void PrimerSecuencia (void *p_arg){
 		OSStatInit();
 	#endif
 
+	PinReset();
 
 	while (DEF_TRUE){
+		UsbPrintf("Secuencia 1");
 	    DOCfgMode(LED1, DO_MODE_BLINK_ASYNC, false);
 	    DOCfgBlink(LED1, DO_BLINK_EN, 99, 199);
 
@@ -505,7 +505,7 @@ static void PrimerSecuencia (void *p_arg){
 
 	    DOCfgMode(LED3, DO_MODE_LOW, false);
 
-	    OSTimeDly(1000);
+	    OSTimeDly(800);
 	}
 }
 
@@ -521,6 +521,7 @@ static void SegundaSecuencia (void *p_arg){
 		OSStatInit();
 	#endif
 
+	PinReset();
 
 	while (DEF_TRUE){
 		DOCfgMode(LED1, DO_MODE_BLINK_ASYNC, false);
@@ -532,7 +533,7 @@ static void SegundaSecuencia (void *p_arg){
 		DOCfgMode(LED3, DO_MODE_BLINK_ASYNC, false);
 		DOCfgBlink(LED3, DO_BLINK_EN, 299, 399);
 
-		OSTimeDly(1000);
+		OSTimeDly(1200);
 	}
 }
 
@@ -548,6 +549,8 @@ static void TercerSecuencia (void *p_arg){
 		OSStatInit();
 	#endif
 
+	PinReset();
+
 	while (DEF_TRUE){
 		DOCfgMode(LED1, DO_MODE_BLINK_ASYNC, false);
 		DOCfgBlink(LED1, DO_BLINK_EN, 99, 199);
@@ -558,7 +561,7 @@ static void TercerSecuencia (void *p_arg){
 		DOCfgMode(LED3, DO_MODE_BLINK_ASYNC, false);
 		DOCfgBlink(LED3, DO_BLINK_EN, 199, 349);
 
-		OSTimeDly(1000);
+		OSTimeDly(3000);
 	}
 }
 
@@ -634,6 +637,11 @@ void SuspendAllTasksExceptOne(int TaskID){
 	}
 }
 
+void ApagarBlink(){
+	DOCfgMode(LED1, DO_MODE_LOW, false);
+	DOCfgMode(LED2, DO_MODE_LOW, false);
+	DOCfgMode(LED3, DO_MODE_LOW, false);
+}
 /* USER CODE END 4 */
 
 /**

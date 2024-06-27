@@ -568,12 +568,11 @@ static  bool  DOIsBlinkEn (DIO_DO *pdo)
 *********************************************************************************************************
 */
 
-//void  DOSet (char a,uint16_t n, bool state)
 void  DOSet (uint16_t n, bool state)
-{//HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+{
 if (n < DIO_MAX_DO) {
 	  OS_ENTER_CRITICAL();
-	  DOTbl[n].DOCtrl = state;// Actualiza la tabla de control
+	  DOTbl[n].DOCtrl = state;
 	  OS_EXIT_CRITICAL();
 	}
 }
