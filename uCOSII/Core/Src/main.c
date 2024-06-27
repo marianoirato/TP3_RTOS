@@ -59,18 +59,16 @@
 /* USER CODE BEGIN PV */
 
 static void StartupTask (void *p_arg);//IO y Serial
-static void MensajeUSB (void *p_arg);//IO y Serial
-static void SenoGenerador (void *p_arg);//Generacion seno mediante R2R
-static void Secuencia1 (void *p_arg);//Led secuencia 1
-static void Secuencia2 (void *p_arg);//Led secuencia 2
-static void Secuencia3 (void *p_arg);//Led secuencia 3
+static void SenoTsk (void *p_arg);//Generacion seno mediante R2R
+static void PrimerSecuencia (void *p_arg);//Led secuencia 1
+static void SegundaSecuencia (void *p_arg);//Led secuencia 2
+static void TercerSecuencia (void *p_arg);//Led secuencia 3
 
 static OS_STK StartupTaskStk[APP_CFG_STARTUP_TASK_STK_SIZE];//IO y Serial
-static OS_STK MensajeUSBStk[APP_CFG_STARTUP_TASK_STK_SIZE];//IO y Serial
-static OS_STK SenoGeneradorStk[APP_CFG_STARTUP_TASK_STK_SIZE];//Generacion seno mediante R2R
-static OS_STK Secuencia1Stk[APP_CFG_STARTUP_TASK_STK_SIZE];//Led secuencia 1
-static OS_STK Secuencia2Stk[APP_CFG_STARTUP_TASK_STK_SIZE];//Led secuencia 2
-static OS_STK Secuencia3Stk[APP_CFG_STARTUP_TASK_STK_SIZE];//Led secuencia 3
+static OS_STK SenoTaskStk[APP_CFG_STARTUP_TASK_STK_SIZE];//Generacion seno mediante R2R
+static OS_STK PrimerSecuenciaStk[APP_CFG_STARTUP_TASK_STK_SIZE];//Led secuencia 1
+static OS_STK SegundaSecuenciaStk[APP_CFG_STARTUP_TASK_STK_SIZE];//Led secuencia 2
+static OS_STK TercerSecuenciaStk[APP_CFG_STARTUP_TASK_STK_SIZE];//Led secuencia 3
 
 void UsbPrintf (CPU_CHAR  *p_fmt, ...);
 
@@ -106,7 +104,6 @@ enum BOTON{
 
 enum TASKS{
 	INIT = 1,
-	USB_TASK,
 	SENO,
 	SEC1,
 	SEC2,
@@ -114,9 +111,6 @@ enum TASKS{
 };
 
 int salida[8] = {0};
-int c = 0;
-int e = 0;
-int f = 0;
 int frecuencia = 0;
 int valorFrecuencia[5] = {1, 10, 20, 30, 40};
 int valorFrecuenciaHz[5] = {213, 21, 10, 7, 5};
@@ -126,7 +120,6 @@ int senoArreglo45[seno45]={
 		0xe4, 0xd8, 0xca, 0xbb, 0xab, 0x9a, 0x88, 0x77, 0x65, 0x54, 0x44, 0x35, 0x27, 0x1b, 0x11, 0x09,
 		0x04, 0x01, 0x00, 0x02, 0x06, 0x0d, 0x16, 0x21,	0x2e, 0x3c, 0x4c, 0x5c, 0x6e, 0x7f,
 };
-
 
 
 /* USER CODE END 0 */
@@ -188,81 +181,66 @@ CPU_INT16U int_id;
 		&os_err);
 	#endif
 
-	OSTaskCreateExt( MensajeUSB,
+	OSTaskCreateExt( SenoTsk,
 					 0,
-					 &MensajeUSBStk[APP_CFG_STARTUP_TASK_STK_SIZE - 1],
+					 &SenoTaskStk[APP_CFG_STARTUP_TASK_STK_SIZE - 1],
 					 2,
 					 2,
-					 &MensajeUSBStk[0],
+					 &SenoTaskStk[0],
 					 APP_CFG_STARTUP_TASK_STK_SIZE,
 					 0,
 					 (OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 	#if (OS_TASK_NAME_EN > 0u)
 		OSTaskNameSet( APP_CFG_STARTUP_TASK_PRIO,
-		(INT8U *)"Mensaje USB",
+		(INT8U *)"Seno Task",
 		&os_err);
 	#endif
 
-	OSTaskCreateExt( SenoGenerador,
+
+	OSTaskCreateExt( PrimerSecuencia,
 					 0,
-					 &SenoGeneradorStk[APP_CFG_STARTUP_TASK_STK_SIZE - 1],
+					 &PrimerSecuenciaStk[APP_CFG_STARTUP_TASK_STK_SIZE - 1],
 					 3,
 					 3,
-					 &SenoGeneradorStk[0],
+					 &PrimerSecuenciaStk[0],
 					 APP_CFG_STARTUP_TASK_STK_SIZE,
 					 0,
 					 (OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 	#if (OS_TASK_NAME_EN > 0u)
 		OSTaskNameSet( APP_CFG_STARTUP_TASK_PRIO,
-		(INT8U *)"Seno Generador",
+		(INT8U *)"Primer Secuencia",
 		&os_err);
 	#endif
 
 
-	OSTaskCreateExt( Secuencia1,
+	OSTaskCreateExt( SegundaSecuencia,
 					 0,
-					 &Secuencia1Stk[APP_CFG_STARTUP_TASK_STK_SIZE - 1],
+					 &SegundaSecuenciaStk[APP_CFG_STARTUP_TASK_STK_SIZE - 1],
 					 4,
 					 4,
-					 &Secuencia1Stk[0],
-					 APP_CFG_STARTUP_TASK_STK_SIZE,
-					 0,
-					 (OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
-	#if (OS_TASK_NAME_EN > 0u)
-		OSTaskNameSet( APP_CFG_STARTUP_TASK_PRIO,
-		(INT8U *)"Secuencia 1",
-		&os_err);
-	#endif
-
-
-	OSTaskCreateExt( Secuencia2,
-					 0,
-					 &Secuencia2Stk[APP_CFG_STARTUP_TASK_STK_SIZE - 1],
-					 5,
-					 5,
-					 &Secuencia2Stk[0],
+					 &SegundaSecuenciaStk[0],
 					 APP_CFG_STARTUP_TASK_STK_SIZE,
 					 0,
 					 (OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 	#if (OS_TASK_NAME_EN > 0u)
 		 OSTaskNameSet( APP_CFG_STARTUP_TASK_PRIO,
-		 (INT8U *)"Secuencia 2",
+		 (INT8U *)"Segunda Secuencia",
 		 &os_err);
 	#endif
 
 
-	OSTaskCreateExt( Secuencia3,
+	OSTaskCreateExt( TercerSecuencia,
 					 0,
-					 &Secuencia3Stk[APP_CFG_STARTUP_TASK_STK_SIZE - 1],
-					 6,
-					 6,
-					 &Secuencia3Stk[0],
+					 &TercerSecuenciaStk[APP_CFG_STARTUP_TASK_STK_SIZE - 1],
+					 5,
+					 5,
+					 &TercerSecuenciaStk[0],
 					 APP_CFG_STARTUP_TASK_STK_SIZE,
 					 0,
 					 (OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 	#if (OS_TASK_NAME_EN > 0u)
 		  OSTaskNameSet( APP_CFG_STARTUP_TASK_PRIO,
-		  (INT8U *)"Secuencia 3",
+		  (INT8U *)"Tercer Secuencia",
 		  &os_err);
 	#endif
 
@@ -464,55 +442,27 @@ static void StartupTask (void *p_arg){
 }
 
 
-static void MensajeUSB (void *p_arg){
+static void SenoTsk (void *p_arg){
 
 	CPU_INT32U cpu_clk;
 	(void)p_arg;
 	cpu_clk = HAL_RCC_GetHCLKFreq();
 
-	/* Initialize and enable System Tick timer */
-
 	OS_CPU_SysTickInitFreq(cpu_clk);
 
 	#if (OS_TASK_STAT_EN > 0)
-		OSStatInit();                                               /* Determine CPU capacity.                              */
-
+		OSStatInit();
 	#endif
-
-	// App_EventCreate();                                          /* Create application events.                           */
-	// App_TaskCreate();                                           /* Create application tasks.                            */
-
-	while (DEF_TRUE){
-		//UsbPrintf("Frencuencia Seno: %d\n",valorFrecuenciaHz[frecuencia]);
-		//UsbPrintf("uCOS-II Running...\n");
-		OSTimeDlyHMSM(0u, 0u, 1u, 0u);
-	}
-}
-
-
-/*Generacion Seno*/
-static void SenoGenerador (void *p_arg){
-
-	CPU_INT32U cpu_clk;
-	(void)p_arg;
-	cpu_clk = HAL_RCC_GetHCLKFreq();
-
-	/* Initialize and enable System Tick timer */
-	OS_CPU_SysTickInitFreq(cpu_clk);
-
-	#if (OS_TASK_STAT_EN > 0)
-		OSStatInit();                                               /* Determine CPU capacity.                              */
-	#endif
-
-	// App_EventCreate();                                          /* Create application events.                           */
-	// App_TaskCreate();                                           /* Create application tasks.                            */
 
 	PinReset();
 
+    DOCfgMode(LED1, DO_MODE_LOW, false);
+    DOCfgMode(LED2, DO_MODE_LOW, false);
+    DOCfgMode(LED3, DO_MODE_LOW, false);
+
 	while (DEF_TRUE){
-		//OSTaskSuspend(2);
 		UsbPrintf("Frencuencia Seno: %d Hz\n",valorFrecuenciaHz[frecuencia]);
-		//UsbPrintf("uCOS-II Running...\n");
+
 		if(DIGet(3)){
 			if(frecuencia < 4){
 				frecuencia++;
@@ -534,83 +484,81 @@ static void SenoGenerador (void *p_arg){
 }
 
 
-/*Secuencia 1*/
-static void Secuencia1 (void *p_arg){
+static void PrimerSecuencia (void *p_arg){
 	CPU_INT32U cpu_clk;
 	(void)p_arg;
 	cpu_clk = HAL_RCC_GetHCLKFreq();
 
-	/* Initialize and enable System Tick timer */
 	OS_CPU_SysTickInitFreq(cpu_clk);
 
 	#if (OS_TASK_STAT_EN > 0)
-		OSStatInit();                                               /* Determine CPU capacity.                              */
+		OSStatInit();
 	#endif
 
-    DOCfgMode(LED1, DO_MODE_BLINK_ASYNC, false);
-    DOCfgBlink(LED1, DO_BLINK_EN, 99, 199);
-
-    DOCfgMode(LED2, DO_MODE_BLINK_ASYNC, false);
-    DOCfgBlink(LED2, DO_BLINK_EN, 199, 399);
 
 	while (DEF_TRUE){
-	    OSTimeDly(1);
+	    DOCfgMode(LED1, DO_MODE_BLINK_ASYNC, false);
+	    DOCfgBlink(LED1, DO_BLINK_EN, 99, 199);
+
+	    DOCfgMode(LED2, DO_MODE_BLINK_ASYNC, false);
+	    DOCfgBlink(LED2, DO_BLINK_EN, 199, 399);
+
+	    DOCfgMode(LED3, DO_MODE_LOW, false);
+
+	    OSTimeDly(1000);
 	}
 }
 
 
-/*Secuencia 2*/
-static void Secuencia2 (void *p_arg){
+static void SegundaSecuencia (void *p_arg){
 	CPU_INT32U cpu_clk;
 	(void)p_arg;
 	cpu_clk = HAL_RCC_GetHCLKFreq();
 
-	/* Initialize and enable System Tick timer */
 	OS_CPU_SysTickInitFreq(cpu_clk);
 
 	#if (OS_TASK_STAT_EN > 0)
-		OSStatInit();                                               /* Determine CPU capacity.                              */
+		OSStatInit();
 	#endif
 
-	DOCfgMode(LED1, DO_MODE_BLINK_ASYNC, false);
-	DOCfgBlink(LED1, DO_BLINK_EN, 99, 299);
-
-	DOCfgMode(LED2, DO_MODE_BLINK_ASYNC, false);
-	DOCfgBlink(LED2, DO_BLINK_EN, 199, 399);
-
-	DOCfgMode(LED3, DO_MODE_BLINK_ASYNC, false);
-	DOCfgBlink(LED3, DO_BLINK_EN, 299, 399);
 
 	while (DEF_TRUE){
-		OSTimeDly(1);
+		DOCfgMode(LED1, DO_MODE_BLINK_ASYNC, false);
+		DOCfgBlink(LED1, DO_BLINK_EN, 99, 299);
+
+		DOCfgMode(LED2, DO_MODE_BLINK_ASYNC, false);
+		DOCfgBlink(LED2, DO_BLINK_EN, 199, 399);
+
+		DOCfgMode(LED3, DO_MODE_BLINK_ASYNC, false);
+		DOCfgBlink(LED3, DO_BLINK_EN, 299, 399);
+
+		OSTimeDly(1000);
 	}
 }
 
 
-/*Secuencia 3*/
-static void Secuencia3 (void *p_arg){
+static void TercerSecuencia (void *p_arg){
 	CPU_INT32U cpu_clk;
 	(void)p_arg;
 	cpu_clk = HAL_RCC_GetHCLKFreq();
 
-	/* Initialize and enable System Tick timer */
 	OS_CPU_SysTickInitFreq(cpu_clk);
 
 	#if (OS_TASK_STAT_EN > 0)
-		OSStatInit();                                               /* Determine CPU capacity.                              */
+		OSStatInit();
 	#endif
 
-	DOCfgMode(LED1, DO_MODE_BLINK_ASYNC, false);
-	DOCfgBlink(LED1, DO_BLINK_EN, 99, 199);
-
-	DOCfgMode(LED2, DO_MODE_BLINK_ASYNC, false);
-	DOCfgBlink(LED2, DO_BLINK_EN, 149, 299);
-
-	DOCfgMode(LED3, DO_MODE_BLINK_ASYNC, false);
-	DOCfgBlink(LED3, DO_BLINK_EN, 199, 349);
-
 	while (DEF_TRUE){
-		OSTimeDly(1);
+		DOCfgMode(LED1, DO_MODE_BLINK_ASYNC, false);
+		DOCfgBlink(LED1, DO_BLINK_EN, 99, 199);
+
+		DOCfgMode(LED2, DO_MODE_BLINK_ASYNC, false);
+		DOCfgBlink(LED2, DO_BLINK_EN, 149, 299);
+
+		DOCfgMode(LED3, DO_MODE_BLINK_ASYNC, false);
+		DOCfgBlink(LED3, DO_BLINK_EN, 199, 349);
+
+		OSTimeDly(1000);
 	}
 }
 
@@ -670,17 +618,19 @@ void PinReset(){
 }
 
 void SuspendAllTasks(){
-	for (int task = 2; task < 7; task++) {
+	for (int task = 2; task < 6; task++) {
 		OSTaskSuspend(task);
 	}
 }
-void SuspendAllTasksExceptOne(int resume){
 
-	OSTaskResume(resume);
+void SuspendAllTasksExceptOne(int TaskID){
 
-	for (int task = 2; task < 7; task++) {
-		if(task != resume)
+	OSTaskResume(TaskID);
+
+	for (int task = 2; task < 6; task++) {
+		if(task != TaskID){
 			OSTaskSuspend(task);
+		}
 	}
 }
 
