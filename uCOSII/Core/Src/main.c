@@ -35,6 +35,7 @@
 #include <string.h>
 #include "usbd_cdc_if.h"
 #include <math.h>
+#include "stm32f1xx_hal.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,27 +50,27 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define seno360 361
-#define seno180 181
-#define seno90 91
 #define seno45 46
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
 
-static void StartupTask (void *p_arg);//IO y Serial
-static void SenoTsk (void *p_arg);//Generacion seno mediante R2R
-static void PrimerSecuencia (void *p_arg);//Led secuencia 1
-static void SegundaSecuencia (void *p_arg);//Led secuencia 2
-static void TercerSecuencia (void *p_arg);//Led secuencia 3
+static void StartupTask (void *p_arg);
+static void SenoTsk (void *p_arg);
+static void PrimerSecuencia (void *p_arg);
+static void SegundaSecuencia (void *p_arg);
+static void TercerSecuencia (void *p_arg);
+static void SerialTask(void *p_arg);
 
-static OS_STK StartupTaskStk[APP_CFG_STARTUP_TASK_STK_SIZE];//IO y Serial
-static OS_STK SenoTaskStk[APP_CFG_STARTUP_TASK_STK_SIZE];//Generacion seno mediante R2R
-static OS_STK PrimerSecuenciaStk[APP_CFG_STARTUP_TASK_STK_SIZE];//Led secuencia 1
-static OS_STK SegundaSecuenciaStk[APP_CFG_STARTUP_TASK_STK_SIZE];//Led secuencia 2
-static OS_STK TercerSecuenciaStk[APP_CFG_STARTUP_TASK_STK_SIZE];//Led secuencia 3
+static OS_STK StartupTaskStk[APP_CFG_STARTUP_TASK_STK_SIZE];
+static OS_STK SenoTaskStk[APP_CFG_STARTUP_TASK_STK_SIZE];
+static OS_STK PrimerSecuenciaStk[APP_CFG_STARTUP_TASK_STK_SIZE];
+static OS_STK SegundaSecuenciaStk[APP_CFG_STARTUP_TASK_STK_SIZE];
+static OS_STK TercerSecuenciaStk[APP_CFG_STARTUP_TASK_STK_SIZE];
+static OS_STK SerialTaskStk[APP_CFG_STARTUP_TASK_STK_SIZE];
 
 void UsbPrintf (CPU_CHAR  *p_fmt, ...);
 
@@ -83,6 +84,7 @@ void ApagarBlink();
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -114,6 +116,7 @@ enum TASKS{
 
 int salida[8] = {0};
 int frecuencia = 0;
+int frecuencia_anterior = 0;
 int valorFrecuencia[5] = {1, 10, 20, 30, 40};
 int valorFrecuenciaHz[5] = {213, 21, 10, 7, 5};
 
@@ -158,6 +161,7 @@ CPU_INT16U int_id;
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USB_DEVICE_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
   OSInit();
 
@@ -239,6 +243,20 @@ CPU_INT16U int_id;
 		  &os_err);
 	#endif
 
+	OSTaskCreateExt(SerialTask,
+					0,
+					&SerialTaskStk[APP_CFG_STARTUP_TASK_STK_SIZE - 1],
+					6,
+					6,
+					&SerialTaskStk[0],
+					APP_CFG_STARTUP_TASK_STK_SIZE,
+					0,
+					(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
+	#if (OS_TASK_NAME_EN > 0u)
+		  OSTaskNameSet( APP_CFG_STARTUP_TASK_PRIO,
+		  (INT8U *)"Serial",
+		  &os_err);
+	#endif
 
   DIOInit();
   OSStart();
@@ -299,6 +317,39 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief USART3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART3_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART3_Init 0 */
+
+  /* USER CODE END USART3_Init 0 */
+
+  /* USER CODE BEGIN USART3_Init 1 */
+
+  /* USER CODE END USART3_Init 1 */
+  huart3.Instance = USART3;
+  huart3.Init.BaudRate = 115200;
+  huart3.Init.WordLength = UART_WORDLENGTH_8B;
+  huart3.Init.StopBits = UART_STOPBITS_1;
+  huart3.Init.Parity = UART_PARITY_NONE;
+  huart3.Init.Mode = UART_MODE_TX_RX;
+  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART3_Init 2 */
+
+  /* USER CODE END USART3_Init 2 */
+
 }
 
 /**
@@ -435,6 +486,24 @@ static void StartupTask (void *p_arg){
 	}
 }
 
+static void SerialTask(void *p_arg)
+{
+    (void)p_arg;
+    //const char *msg = "Hello from USART3!\r\n";
+    char msg[50];
+
+    while (DEF_TRUE)
+    {
+    	if(frecuencia != frecuencia_anterior){
+    		sprintf(msg, "Frecuencia: %d\r\n", valorFrecuenciaHz[frecuencia]);
+
+    		HAL_UART_Transmit(&huart3, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
+    		frecuencia_anterior = frecuencia;
+    	}
+
+    	OSTimeDlyHMSM(0, 0, 1, 0);
+    }
+}
 
 static void SenoTsk (void *p_arg) {
     CPU_INT32U cpu_clk;
@@ -452,6 +521,7 @@ static void SenoTsk (void *p_arg) {
     for (int i = 0; i < seno45; i++) {
         senoArreglo45[i] = (uint8_t)(127.5 * (1 + sin(2 * 3.14159265 * i / seno45)));
     }
+    UsbPrintf("Frecuencia: %d Hz\n", valorFrecuenciaHz[frecuencia]);
 
     while (DEF_TRUE) {
         ApagarBlink();
@@ -629,7 +699,9 @@ void SuspendAllTasksExceptOne(int TaskID){
 	}
 }
 
-void ApagarBlink(){
+//---------------------------------------------------------------
+void
+ApagarBlink(){
 	DOCfgMode(LED1, DO_MODE_LOW, false);
 	DOCfgMode(LED2, DO_MODE_LOW, false);
 	DOCfgMode(LED3, DO_MODE_LOW, false);
